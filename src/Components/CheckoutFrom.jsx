@@ -1,6 +1,7 @@
 import React from 'react';
-import logo from '../assets/bootstrap-logo.svg'
+import logo from '../assets/bootstrap-logo.svg';
 import { useState } from 'react';
+import FormModal from './FormModal';
 
 const CheckoutFrom = () => {
 
@@ -8,28 +9,32 @@ const CheckoutFrom = () => {
   const [data, setData] = useState({});
 
 
-  const handleChange = ({target}) => {
-    const newData = {...data}
-    newData[target.id]=target.value;
+  const handleChange = ({ target }) => {
+    const newData = { ...data }
+    newData[target.id] = target.value;
     setData(newData)
   };
 
-  const handleChangeCheck = ({ target }) => {
-    let newData = {...data}
+  const handlechecked = ({ target }) => {
+    const newData = { ...data }
+    newData[target.id] = target.value;
 
-    if(!newData.check){
-      newData.check = [];
-      newData.check.push(target.value)
-    }else{
-      if(newData.check.includes(target.value)){
-        newData.check=newData.check.filter((value) => value !== target.value)
-      }else{
-        newData.check=[...newData.check, target.value]
-      }
+    if (target.id === 'billingAddress') {
+      newData.billingAddress = newData.address
     }
-
+    
+    if (target.checked === false) {
+      delete newData[target.id]
+    }
     setData(newData)
-  }
+  };
+
+  const handleRadioChecked = ({ target }) => {
+    const newData = { ...data }
+    newData[target.type] = target.value;
+    setData(newData)
+  };
+
 
 
   return (
@@ -46,7 +51,7 @@ const CheckoutFrom = () => {
 
             <div className='col-md-7 text-start'>
               <h3>Billing address</h3>
-              <form>
+              {/* <form> */}
 
                 <div
                   className="row g-3">
@@ -140,7 +145,7 @@ const CheckoutFrom = () => {
                       id='country'
                       onChange={handleChange}
                     >
-                      <option selected>Choose...</option>
+                      <option >Choose...</option>
                       <option>Bandladesh</option>
                       <option>USA</option>
                       <option>India</option>
@@ -158,7 +163,7 @@ const CheckoutFrom = () => {
                       id='region'
                       onChange={handleChange}
                     >
-                      <option selected>Choose...</option>
+                      <option >Choose...</option>
                       <option>Jhenidah</option>
                       <option>Dhaka</option>
                       <option>Jashore</option>
@@ -166,7 +171,7 @@ const CheckoutFrom = () => {
                   </div>
 
                   <div className="col-md-3">
-                    <label htmlFor="lastName" className='form-label'>Postal Code</label>
+                    <label htmlFor="postalcode" className='form-label'>Postal Code</label>
                     <input
                       required
                       type="text"
@@ -183,10 +188,10 @@ const CheckoutFrom = () => {
                       className="float-start form-check-input"
                       type="checkbox"
                       value='BillingAddress'
-                      id="BillingAddress"
-                      onChange={handleChangeCheck}
+                      id="billingAddress"
+                      onChange={handlechecked}
                     />
-                    <label className="form-check-label px-2" htmlFor="BillingAddress">
+                    <label className="form-check-label px-2" htmlFor="billingAddress">
                       The shipping address is the same as my billing address
                     </label>
                   </div>
@@ -195,11 +200,11 @@ const CheckoutFrom = () => {
                     <input
                       className="form-check-input"
                       type="checkbox"
-                      value="Saveinformation"
-                      id="Saveinformation"
-                      onChange={handleChangeCheck}
+                      value="Saved"
+                      id="saved"
+                      onChange={handlechecked}
                     />
-                    <label className="form-check-label px-2" htmlFor="Saveinformation">
+                    <label className="form-check-label px-2" htmlFor="saved">
                       Save this information for next time
                     </label>
                   </div>
@@ -212,10 +217,10 @@ const CheckoutFrom = () => {
                     <input
                       className="form-check-input"
                       type="radio"
-                      name="flexRadioDefault"
+                      name="radio"
                       id="flexRadioDefault2"
-                      value='Credit card'
-                      onClick={handleChange}
+                      value='Creditcard'
+                      onClick={handleRadioChecked}
                     />
                     <label className="form-check-label px-2" htmlFor="flexRadioDefault2">
                       Credit card
@@ -226,10 +231,10 @@ const CheckoutFrom = () => {
                     <input
                       className="form-check-input"
                       type="radio"
-                      name="flexRadioDefault"
+                      name="radio"
                       id="flexRadioDefault1"
                       value='Cash'
-                      onClick={handleChange}
+                      onClick={handleRadioChecked}
                     />
                     <label className="form-check-label px-2" htmlFor="flexRadioDefault1">
                       Cash
@@ -240,10 +245,10 @@ const CheckoutFrom = () => {
                     <input
                       className="form-check-input"
                       type="radio"
-                      name="flexRadioDefault"
+                      name="radio"
                       id="flexRadioDefault3"
                       value='Paypal'
-                      onClick={handleChange}
+                      onClick={handleRadioChecked}
                     />
                     <label className="form-check-label px-2" htmlFor="flexRadioDefault3">
                       Paypal
@@ -263,7 +268,7 @@ const CheckoutFrom = () => {
                   <div className="col-md-6">
                     <label htmlFor="cardNumber" className='form-label'>Card number</label>
                     <input
-                      type="text"
+                      type="number"
                       className='form-control'
                       id='cardNumber'
                       onChange={handleChange}
@@ -272,10 +277,10 @@ const CheckoutFrom = () => {
 
                   <p className='text-muted m-0'>Full name as displayed on the card</p>
 
-                  <div className="col-md-3">
+                  <div className="col-md-4">
                     <label htmlFor="expirationDate" className='form-label'>Expiration date</label>
                     <input
-                      type="text"
+                      type="date"
                       className='form-control'
                       id='expirationDate'
                       onChange={handleChange}
@@ -285,20 +290,34 @@ const CheckoutFrom = () => {
                   <div className="col-md-3">
                     <label htmlFor="tripleCode" className='form-label'>Triple Code (CVV)</label>
                     <input
-                      type="text"
+                      type="code"
                       className='form-control'
                       id='tripleCode'
                       onChange={handleChange}
                     />
                   </div>
 
-                  <div className="col-md-6"></div>
+                  <div className="col-md-5"></div>
 
                   <hr className='my-4' />
 
-                  <button className='btn btn-primary m-0 py-3 fs-5'type='submit'>Keep paying</button>
 
-                  <footer className='text-center mb-5'>
+
+                  <button
+                    className='btn btn-primary m-0 py-3 fs-5'
+                    data-bs-toggle="modal"
+                    data-bs-target="#exampleModal"
+                    type='submit'
+                  >Submit</button>
+
+                </div>
+              {/* </form> */}
+
+                  <FormModal
+                    data={data}
+                  />
+
+                  <footer className='text-center my-5'>
                     <div>
                       <p>Company name 2017-2022 &copy;</p>
                       <a href="link">Technical support</a>
@@ -306,11 +325,6 @@ const CheckoutFrom = () => {
                       <a href="link">Privacy policy</a>
                     </div>
                   </footer>
-
-
-
-                </div>
-              </form>
             </div>
 
 
@@ -325,8 +339,8 @@ const CheckoutFrom = () => {
               </div>
 
               <div>
-                <ul class="list-group">
-                  <li class="list-group-item">
+                <ul className="list-group">
+                  <li className="list-group-item">
                     <div className='d-flex justify-content-between'>
                       <h6 className='m-0'> product name</h6>
                       <span className='float-start m-0'>$12</span>
@@ -336,7 +350,7 @@ const CheckoutFrom = () => {
                     </div>
                   </li>
 
-                  <li class="list-group-item">
+                  <li className="list-group-item">
                     <div className='d-flex justify-content-between'>
                       <h6 className='m-0'> second product</h6>
                       <span className='float-start m-0'>$8</span>
@@ -346,7 +360,7 @@ const CheckoutFrom = () => {
                     </div>
                   </li>
 
-                  <li class="list-group-item">
+                  <li className="list-group-item">
                     <div className='d-flex justify-content-between'>
                       <h6 className='m-0'> third item</h6>
                       <span className='float-start m-0'>$5</span>
@@ -356,7 +370,7 @@ const CheckoutFrom = () => {
                     </div>
                   </li>
 
-                  <li class="list-group-item">
+                  <li className="list-group-item">
                     <div className='d-flex justify-content-between'>
                       <h6 className='m-0 text-success'> promo code</h6>
                       <span className='float-start m-0 text-success'>$-5</span>
@@ -366,7 +380,7 @@ const CheckoutFrom = () => {
                     </div>
                   </li>
 
-                  <li class="list-group-item mb-3">
+                  <li className="list-group-item mb-3">
                     <div className='d-flex justify-content-between'>
                       <h6 className='m-0 fw-normal'> Total (USD)</h6>
                       <span className='float-start m-0 text-bold fw-bold'>$20</span>
@@ -379,9 +393,9 @@ const CheckoutFrom = () => {
                 </ul>
 
                 <form className='card p-2'>
-                  <div class=" input-group ">
-                    <input type="text" class="form-control" placeholder="Recipient's username" aria-label="Recipient's username" aria-describedby="button-addon2" />
-                    <button class="btn btn-secondary" type="button" id="button-addon2">verification</button>
+                  <div className=" input-group ">
+                    <input type="text" className="form-control" placeholder="Recipient's username" aria-label="Recipient's username" aria-describedby="button-addon2" />
+                    <button className="btn btn-secondary" type="button" id="button-addon2">verification</button>
                   </div>
                 </form>
               </div>

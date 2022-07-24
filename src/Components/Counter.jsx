@@ -43,7 +43,7 @@ const Counter = () => {
 
     // {
     //   counts.length > 0 ? (
-    <div>
+    <div className='container'>
       <div>
         <button className='btn btn-secondary my-3'
          onClick={()=> addCount()}

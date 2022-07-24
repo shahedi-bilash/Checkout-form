@@ -22,7 +22,7 @@ const FormDetails = () => {
   return (
 
 
-    <div>
+    <div className='container'>
       <form action="" className='my-5'
       onSubmit={(e) => {
         e.preventDefault();

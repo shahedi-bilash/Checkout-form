@@ -186,3 +186,5 @@ const check = []
 const arr = '1, 2, 3, 4'
 check.push(arr)
  console.log(check);
+
+ 
